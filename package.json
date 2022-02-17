@@ -1,15 +1,12 @@
 {
   "name": "reacty",
-  "version": "1.0.0",
-  "description": "Some Shit",
-  "main": "index.html",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "butter-bundler index.html",
-    "build": "build index.html"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
-  "keywords": [
-    "javascript",
-    "starter"
-  ]
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
