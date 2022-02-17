@@ -1,0 +1,15 @@
+{
+  "name": "reacty",
+  "version": "1.0.0",
+  "description": "Some Shit",
+  "main": "index.html",
+  "scripts": {
+    "start": "butter-bundler index.html",
+    "build": "build index.html"
+  },
+  "dependencies": {},
+  "keywords": [
+    "javascript",
+    "starter"
+  ]
+}
