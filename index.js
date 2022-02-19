@@ -6,10 +6,11 @@ const contextStore = [];
 var ctxIndx = 0;
 var idx = 0;
 export const useState = (initVal) => {
-  const state = store[idx] || initVal;
+  if (initVal instanceof Function && store[idx] == undefined) store[idx] = initVal()
+  var state = store[idx] || initVal;
   const _idx = idx;
   const setState = (newVal) => {
-    if (typeof newVal === "function") newVal = newVal(store[_idx]);
+    if (newVal instanceof Function) newVal = newVal(store[_idx]);
     store[_idx] = newVal;
   };
   store[idx] = state;
@@ -26,7 +27,7 @@ export const useEffect = (cb, depArray) => {
   const oldDeps = store[idx];
   let hasChanged = true;
   if (oldDeps) {
-    hasChanged = depArray.some((dep, i) => Object.is(dep, oldDeps[i]));
+    hasChanged = depArray.some((dep, i) => !Object.is(dep, oldDeps[i]));
   }
   if (hasChanged) cb();
   store[idx] = depArray;
@@ -34,7 +35,9 @@ export const useEffect = (cb, depArray) => {
 };
 
 export const useReducer = (reducer, initVal) => {
+
   const [state, setState] = useState(initVal);
+
   const dispatch = (action) => {
     return setState(reducer(action));
   };
@@ -56,19 +59,28 @@ export const useContext = ({ index }) => {
   return contextStore[index];
 };
 
-export const useMemo = (func) => {
-  return (...values) => {
-    const [state, setState] = useState(func(...values))
-    useEffect(() => {
-      console.log("actually ran")
-      setState(func(...values))
-    }, values)
-    return state
-  }
-}
 export const renderDom = (cmpt, elm) => {
   applets.push({ cmpt, elm, vdom: {} })
 };
+
+export const StaticComponent = (Component, uuid) => {
+  return (props) => {
+    const reactElement = Component(props)
+    reactElement.props["static-component"] = uuid;
+    return reactElement;
+  }
+}
+
+export const getServerData = async (...args) => {
+
+  if (!window) {
+    const response = serverFetch(...args)
+    return response;
+  }
+  else {
+    return fetch(...args)
+  }
+}
 
 setInterval(() => {
   idx = 0;
@@ -76,6 +88,9 @@ setInterval(() => {
     domRenderer(applets[i])
   })
 }, 50);
+applets.forEach((_, i) => {
+  domRenderer(applets[i])
+})
 
 const React = {
   useState,

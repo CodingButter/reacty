@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-
 import crud from "./elementCRUD.js"
-
-
 const objectCompare = (obj1, obj2) => {
   if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) return true
   const changed = Object.keys(obj1).some((k, i) => {
@@ -36,7 +33,6 @@ export const compare = (newDom, applet) => {
 
     if (vElm.chilren) {
       const nChildrenKeys = nElm.children.map((child) => child?.props?.key)
-
       nChildrenKeys && vElm.children.forEach((child, index) => {
         if (nChildrenKeys.indexOf(child?.props?.key) == -1) {
           child.element.remove()

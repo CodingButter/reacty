@@ -1,8 +1,12 @@
 export const setProps = (elm, props) => {
   props && !!Object.keys(props).length &&
     Object.keys(props).forEach((propName) => {
-      if (propName !== "children")
+      if (propName !== "children") {
+        if (Object.is(elm[propName], undefined) && props[propName] instanceof Function === false)
+          elm.setAttribute(propName, props[propName])
         elm[propName] = props[propName]
+
+      }
     })
 };
 

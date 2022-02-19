@@ -1,12 +1,11 @@
 {
-  "name": "reacty",
-  "version": "1.0.1",
-  "description": "",
+  "name": "butter-react",
+  "version": "1.0.3",
+  "description": "My own React style framework",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "CodingButter",
+  "license": "ISC",
+  "dependencies": {
+    "butter-uuid": "^1.0.1"
+  }
 }
