@@ -1,38 +1,50 @@
-import { useRef } from "../index"
-import uuid from "butter-uuid"
+import { useRef } from "../index";
+import { hashedCode } from "butter-uuid";
+import { cammelToDash } from "../utilities";
+
 const styleObjectToString = (obj) => {
   const dashedStyle = Object.keys(obj).reduce((acc, current, index) => {
-    const dashed = current.replace(/[A-Z]/g, m => "-" + m.toLowerCase())
-    return acc += `${dashed}:${obj[current]};`
-  }, "")
-  return dashedStyle
-}
+    const dashed = cammelToDash(current);
+    return (acc += `${dashed}:${obj[current]};`);
+  }, "");
+  return dashedStyle;
+};
 
-class ReactElement {
-  constructor(tag, props, children) {
+export class ReactElement {
+  constructor(tag, props) {
     if (props.style && typeof props.style !== "string") {
-      props.style = styleObjectToString(props.style)
+      props.style = styleObjectToString(props.style);
     }
     this.tag = tag;
     this.props = props;
-    this.children = children;
   }
 }
 
 const createElement = (tag, props, ...children) => {
-  const key = useRef(uuid())
-  if (!props) props = {}
-  props.innerText = children.reduce((acc, a, index) => {
-    if (typeof a === "string" || typeof a === "number") return acc += `${(a).toString()}${index !== children.length - 1 ? "," : ""}`
-  }, "") || "";
-  if (props.innerText !== '') children = []
-  props.children = children || [];
-  if (typeof tag != "string") {
-    const elm = tag(props)
-    return elm;
+  if (!props) props = {};
+  const key = useRef(
+    props.key ||
+      hashedCode(`${JSON.stringify(children)}${tag}${JSON.stringify(props)}`)
+  );
+  props.children =
+    props.children ||
+    children.reduce((acc, child) => {
+      if (Array.isArray(child))
+        child.forEach((elm) => {
+          acc.push(elm);
+        });
+      else {
+        acc.push(child);
+      }
+      return acc;
+    }, []);
+  props.key = props.key || key.current;
+  props["butter-key"] = props.key;
+  if (tag instanceof Function) {
+    const reactElm = tag(props);
+    return reactElm;
   }
-  props.key = props.key || key.current
 
-  return new ReactElement(tag, props, children);
+  return new ReactElement(tag, props, props.children);
 };
 export default createElement;

@@ -1,13 +1,13 @@
 import domRenderer from "./domRenderer/index";
 import createElement from "./createElement/index";
-const applets = []
+const applets = [];
 const store = [];
 const contextStore = [];
 var ctxIndx = 0;
 var idx = 0;
 export const useState = (initVal) => {
-  if (initVal instanceof Function && store[idx] == undefined) store[idx] = initVal()
-  var state = store[idx] || initVal;
+  if (initVal instanceof Function && store[idx] == null) store[idx] = initVal();
+  var state = store[idx] == null ? initVal : store[idx];
   const _idx = idx;
   const setState = (newVal) => {
     if (newVal instanceof Function) newVal = newVal(store[_idx]);
@@ -35,7 +35,6 @@ export const useEffect = (cb, depArray) => {
 };
 
 export const useReducer = (reducer, initVal) => {
-
   const [state, setState] = useState(initVal);
 
   const dispatch = (action) => {
@@ -49,7 +48,7 @@ export const createContext = (initVal) => {
   const _idx = ctxIndx;
   const Provider = ({ value, children }) => {
     contextStore[_idx] = value;
-    return { children }
+    return { children };
   };
   ctxIndx++;
   return { index: _idx, Provider };
@@ -60,37 +59,35 @@ export const useContext = ({ index }) => {
 };
 
 export const renderDom = (cmpt, elm) => {
-  applets.push({ cmpt, elm, vdom: {} })
+  applets.push({ cmpt, elm, vdom: {} });
 };
 
 export const StaticComponent = (Component, uuid) => {
   return (props) => {
-    const reactElement = Component(props)
+    const reactElement = Component(props);
     reactElement.props["static-component"] = uuid;
     return reactElement;
-  }
-}
+  };
+};
 
 export const getServerData = async (...args) => {
-
   if (!window) {
-    const response = serverFetch(...args)
+    const response = serverFetch(...args);
     return response;
+  } else {
+    return fetch(...args);
   }
-  else {
-    return fetch(...args)
-  }
-}
+};
 
 setInterval(() => {
   idx = 0;
   applets.forEach((_, i) => {
-    domRenderer(applets[i])
-  })
+    domRenderer(applets[i]);
+  });
 }, 50);
 applets.forEach((_, i) => {
-  domRenderer(applets[i])
-})
+  domRenderer(applets[i]);
+});
 
 const React = {
   useState,
@@ -99,8 +96,7 @@ const React = {
   createContext,
   useContext,
   renderDom,
-  createElement
-}
+  createElement,
+};
 
-export default React
-
+export default React;
